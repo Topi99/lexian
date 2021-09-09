@@ -6,11 +6,15 @@ struct Sides {
 }
 
 fn main() -> io::Result<()> {
-    let prods = read_productions();
+    let productions = read_productions();
 
-    let Sides { left, right } = split_sides(prods);
+    let Sides { left, right } = split_sides(productions);
 
-    println!("{:?} {:?}", left, right);
+    let non_terminals = get_non_terminals(left);
+    let terminals = get_terminals(&non_terminals, right);
+
+    println!("Terminal: {}", terminals.join(", "));
+    println!("Non terminal: {}", non_terminals.join(", "));
 
     Ok(())
 }
@@ -65,4 +69,35 @@ fn split_sides(productions: Vec<String>) -> Sides {
     }
 
     Sides { left, right }
+}
+
+fn get_non_terminals(left_side: Vec<String>) -> Vec<String> {
+    let mut non_terminals = vec![];
+
+    for element in left_side {
+        if !non_terminals.contains(&element) {
+            non_terminals.push(element);
+        }
+    }
+
+    non_terminals
+}
+
+fn get_terminals(non_terminals: &Vec<String>, right_side: Vec<String>) -> Vec<String> {
+    let mut splited_right = vec![];
+    let mut terminals = vec![];
+
+    for line in right_side {
+        for element in line.split(" ") {
+            splited_right.push(String::from(element));
+        }
+    }
+
+    for element in splited_right {
+        if element != "'" && !non_terminals.contains(&element)  && !terminals.contains(&element) {
+            terminals.push(element);
+        }
+    }
+
+    terminals
 }
