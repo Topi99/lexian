@@ -3,6 +3,13 @@ name = "lexian"
 version = "0.1.0"
 authors = ["Topiltzin Hernández Mares <nokoayzack@gmail.com>"]
 edition = "2018"
+license = "MIT"
+description = "A tool to lexicaly analyze a grammar"
+readme = "README.md"
+homepage = "https://github.com/you/grrs"
+repository = "https://github.com/you/grrs"
+keywords = ["lexical analyzer", "context-free grammar", "chomsky"]
+categories = ["compilers"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

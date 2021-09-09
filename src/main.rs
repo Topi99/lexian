@@ -94,7 +94,7 @@ fn get_terminals(non_terminals: &Vec<String>, right_side: Vec<String>) -> Vec<St
     }
 
     for element in splited_right {
-        if element != "'" && !non_terminals.contains(&element)  && !terminals.contains(&element) {
+        if element != "'" && !non_terminals.contains(&element) && !terminals.contains(&element) {
             terminals.push(element);
         }
     }
