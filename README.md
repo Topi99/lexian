@@ -11,7 +11,7 @@
 
 1. Primero, descarga el repo:
   ```bash
-  git clone <>
+  git clone git@github.com:Topi99/lexian.git
   ```
 
 2. Entra al nuevo directorio:
