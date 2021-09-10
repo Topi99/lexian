@@ -2,7 +2,7 @@
 
 ## Requisitos previos
 
-1. [rustp](https://www.rust-lang.org/tools/install): Este programa está escrito en `rust`, por lo tanto se necesitan las herramientas de desarrollo de `rust`. Si usas `macOS`, `Linux` u otro sistema derivado de `Unix`, puedes instalarlo con:
+1. [rustup](https://www.rust-lang.org/tools/install): Este programa está escrito en `rust`, por lo tanto se necesitan las herramientas de desarrollo de `rust`. Si usas `macOS`, `Linux` u otro sistema derivado de `Unix`, puedes instalarlo con:
   ```bash
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
   ```
@@ -19,7 +19,7 @@
   cd lexian
   ```
 
-3. Puedes ejecutar el programa directamente con `cargo` (se instala automáticamente con `rustp`):
+3. Puedes ejecutar el programa directamente con `cargo` (se instala automáticamente con `rustup`):
   ```bash
   # el programa necesita un archivo como entrada para correr correctamente
   cargo run < src/input-examples.txt
