@@ -28,9 +28,13 @@ fn main() -> io::Result<()> {
     let non_terminals = get_non_terminals(&left);
     let terminals = get_terminals(&non_terminals, &right);
 
-    println!("{:?}", get_first(
-        &String::from("F"), &left, &right
-    ));
+    for terminal in non_terminals {
+        println!(
+            "{} => FIRST = {{{}}}",
+            terminal,
+            get_first(&terminal, &left, &right).join(", "),
+        );
+    }
 
     Ok(())
 }
@@ -150,17 +154,22 @@ fn get_first(
     let mut first = vec![];
 
     for index in indexes {
-        let first_in_body = &right_side[index]
-            .chars().next().unwrap().to_string();
+        let first_in_body = &String::from(
+            right_side[index].split(' ').collect::<Vec<_>>()[0]
+        );
 
         match first_in_body.as_str() {
             "'" => first.push(String::from("' '")),
             _ => {
                 if left_side.contains(first_in_body) {
-                    first.extend(
-                        get_first(first_in_body, left_side, right_side)
-                    );
-                } else {
+                    for maybe_first in get_first(
+                        first_in_body, left_side, right_side,
+                    ) {
+                        if !first.contains(&maybe_first) {
+                            first.push(maybe_first);
+                        }
+                    }
+                } else if !first.contains(first_in_body) {
                     first.push(String::from(first_in_body));
                 }
             }
