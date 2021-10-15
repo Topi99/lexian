@@ -1,13 +1,7 @@
-use std::io::{self, BufRead};
+mod grammar;
 
-/// Estructura para representar ambos lados de la gramática.
-struct Sides {
-    /// Lado izquierdo de el símbolo `->`.
-    /// Contiene todos los items no terminales (se pueden repetir).
-    left: Vec<String>,
-    /// Lado derecho de el símbolo `->`. Contiene terminales y no terminales.
-    right: Vec<String>,
-}
+use std::io::{self, BufRead};
+use grammar::grammar::{Grammar, Sides};
 
 /// La función principal que será llamada al ejecutar el programa.
 /// 
@@ -21,22 +15,23 @@ struct Sides {
 /// terminales.
 /// 5. Se imprimen elementos terminales y no terminales en la consola.
 fn main() -> io::Result<()> {
-    let productions = read_productions();
+  let productions = read_productions();
 
-    let Sides { left, right } = split_sides(productions);
+  let grammar = Grammar::new(productions);
+  let Sides { left, right } = grammar.sides;
 
-    let non_terminals = get_non_terminals(&left);
-    let terminals = get_terminals(&non_terminals, &right);
+  let non_terminals = get_non_terminals(&left);
+  let terminals = get_terminals(&non_terminals, &right);
 
-    for terminal in non_terminals {
-        println!(
-            "{} => FIRST = {{{}}}",
-            terminal,
-            get_first(&terminal, &left, &right).join(", "),
-        );
-    }
+  for terminal in non_terminals {
+    println!(
+      "{} => FIRST = {{{}}}",
+      terminal,
+      get_first(&terminal, &left, &right).join(", "),
+    );
+  }
 
-    Ok(())
+  Ok(())
 }
 
 /// Lee de `stdin` las producciones de la gramática libre de contexto.
@@ -76,24 +71,6 @@ pub fn read_productions() -> Vec<String> {
     }
 
     prods
-}
-
-/// Transforma un vector de producciones en dos vectores, uno para el lado
-/// derecho y otro para el izquierdo.
-/// 
-/// `split_sides()` regresa una estructura `Sides` con los diferentes lados
-///  de las producciones.
-fn split_sides(productions: Vec<String>) -> Sides {
-    let mut left = vec![];
-    let mut right = vec![];
-
-    for production in productions {
-        let splited = production.split(" -> ").collect::<Vec<_>>();
-        left.push(String::from(splited[0]));
-        right.push(String::from(splited[1]));
-    }
-
-    Sides { left, right }
 }
 
 /// Filtra el lado izquierdo de la gramática y regresa un vector con todos los
@@ -149,34 +126,38 @@ fn get_terminals(
 fn get_first(
     non_terminal: &String, left_side: &Vec<String>, right_side: &Vec<String>,
 ) -> Vec<String> {
-    let indexes = get_indexes(non_terminal, left_side);
+  let indexes = get_indexes(non_terminal, left_side);
 
-    let mut first = vec![];
+  let mut first = vec![];
 
-    for index in indexes {
-        let first_in_body = &String::from(
-            right_side[index].split(' ').collect::<Vec<_>>()[0]
-        );
+  for index in indexes {
+    let first_in_body = &String::from(
+      right_side[index].split(' ').collect::<Vec<_>>()[0]
+    );
 
-        match first_in_body.as_str() {
-            "'" => first.push(String::from("' '")),
-            _ => {
-                if left_side.contains(first_in_body) {
-                    for maybe_first in get_first(
-                        first_in_body, left_side, right_side,
-                    ) {
-                        if !first.contains(&maybe_first) {
-                            first.push(maybe_first);
-                        }
-                    }
-                } else if !first.contains(first_in_body) {
-                    first.push(String::from(first_in_body));
-                }
-            }
-        }
+    if first_in_body == non_terminal {
+      continue;
     }
 
-    first
+    if first_in_body.as_str() == "'" {
+      first.push(String::from("' '"));
+      continue;
+    }
+
+    if left_side.contains(first_in_body) {
+      for maybe_first in get_first(
+        first_in_body, left_side, right_side,
+      ) {
+        if !first.contains(&maybe_first) {
+          first.push(maybe_first);
+        }
+      }
+    } else if !first.contains(first_in_body) {
+      first.push(String::from(first_in_body));
+    }
+  }
+
+  first
 }
 
 fn get_indexes(terminal: &String, terminals: &Vec<String>) -> Vec<usize> {
