@@ -165,6 +165,13 @@ impl Grammar {
   }
 
   pub fn find_follow(&mut self, non_terminal: &String) -> Vec<String> {
+    if self.follows.contains_key(non_terminal) {
+      match self.follows.get(non_terminal) {
+        Some(follow) => return follow.to_owned(),
+        None => {},
+      }
+    }
+
     let mut follow = vec![];
     let mut _use_third_rule = false;
     let indexes = self.get_indexes_in_non_terminals(non_terminal);
@@ -223,6 +230,8 @@ impl Grammar {
         }
       }
     }
+
+    self.follows.insert(String::from(non_terminal), follow.to_owned());
     follow
   }
 
