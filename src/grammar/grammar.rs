@@ -89,13 +89,33 @@ impl Grammar {
     self.terminals = terminals;
   }
 
-  pub fn find_first(&mut self, non_terminal: &String) -> Vec<String> {
+  pub fn find_first_production(&mut self, elements: &Vec<String>) -> Vec<String> {
+    let mut first = vec![];
+
+    for element in elements {
+      let next_first = self.find_single_first(element);
+
+      for maybe_next_first in next_first.to_owned() {
+        if !first.contains(&maybe_next_first) {
+          first.push(maybe_next_first);
+        }
+      }
+
+      if !next_first.contains(&String::from("' '")) {
+        break;
+      }
+    }
+
+    first
+  }
+
+  pub fn find_single_first(&mut self, non_terminal: &String) -> Vec<String> {
     // Revisa si el elemento es un terminal.
     if self.terminals.contains(non_terminal) {
       return vec![String::from(non_terminal)]
     }
 
-    let indexes = self.get_indexes(non_terminal);
+    let indexes = self.get_indexes_in_non_terminals(non_terminal);
 
     // Revisa si el FIRST del no terminal ya fue encontrado anteriormente
     if self.firsts.contains_key(non_terminal) {
@@ -123,8 +143,12 @@ impl Grammar {
 
       if self.non_terminals.contains(first_in_body) {
         // Si el primer elemento de la producción es un no terminal
-        // realizar búsqueda de FIRST(first_in_body).
-        for maybe_first in self.find_first(first_in_body) {
+        // realizar búsqueda de FIRST(production).
+        let mut production = vec![];
+        for element in elements_in_production {
+          production.push(String::from(element));
+        }
+        for maybe_first in self.find_first_production(&production) {
           if !first.contains(&maybe_first) {
             first.push(maybe_first);
           }
@@ -143,7 +167,21 @@ impl Grammar {
     first
   }
 
-  fn get_indexes(&self, non_terminal: &String) -> Vec<usize> {
+  pub fn find_follow(&mut self, non_terminal: &String) -> Vec<String> {
+    let mut follow = vec![];
+    let indexes = self.get_indexes_in_non_terminals(non_terminal);
+
+    // primera regla
+    if indexes.contains(&0) {
+      follow.push(String::from("$"));
+    }
+
+    // segunda regla
+
+    follow
+  }
+
+  fn get_indexes_in_non_terminals(&self, non_terminal: &String) -> Vec<usize> {
       let mut indexes = vec![];
 
       for (index, value) in self.sides.left.iter().enumerate() {
@@ -153,4 +191,16 @@ impl Grammar {
       }
       indexes
   }
+
+  // fn find_in_right_side(
+  //   &self, non_terminal: &String,
+  // ) -> Vec<(usize, usize)> {
+  //   let result = vec![];
+
+  //   for (prod_index, prod) in self.sides.right.iter().enumerate() {
+  //     for 
+  //   }
+
+  //   result
+  // }
 }

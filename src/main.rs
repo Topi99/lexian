@@ -26,7 +26,7 @@ fn main() -> io::Result<()> {
     println!(
       "{} => FIRST = {{{}}}",
       terminal,
-      grammar.find_first(&terminal).join(", "),
+      grammar.find_single_first(&terminal).join(", "),
     );
   }
 
