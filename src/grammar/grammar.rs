@@ -15,6 +15,7 @@ pub struct Grammar {
   pub sides: Sides,
   pub firsts: HashMap<String, Vec<String>>,
   pub follows: HashMap<String, Vec<String>>,
+  productions: HashMap<usize, Vec<String>>,
 }
 
 impl Grammar {
@@ -38,6 +39,7 @@ impl Grammar {
       sides: Sides { left, right },
       firsts: HashMap::new(),
       follows: HashMap::new(),
+      productions: HashMap::new(),
     }
   }
 
@@ -128,9 +130,8 @@ impl Grammar {
     let mut first = vec![];
 
     for index in indexes {
-      let elements_in_production = self.sides.right[index]
-        .split(' ').collect::<Vec<_>>();
-      let first_in_body = &String::from(elements_in_production[0]);
+      let production = self.get_production(index);
+      let first_in_body = &production[0];
 
       if first_in_body == non_terminal {
         continue;
@@ -144,10 +145,6 @@ impl Grammar {
       if self.non_terminals.contains(first_in_body) {
         // Si el primer elemento de la producción es un no terminal
         // realizar búsqueda de FIRST(production).
-        let mut production = vec![];
-        for element in elements_in_production {
-          production.push(String::from(element));
-        }
         for maybe_first in self.find_first_production(&production) {
           if !first.contains(&maybe_first) {
             first.push(maybe_first);
@@ -169,6 +166,7 @@ impl Grammar {
 
   pub fn find_follow(&mut self, non_terminal: &String) -> Vec<String> {
     let mut follow = vec![];
+    let mut _use_third_rule = false;
     let indexes = self.get_indexes_in_non_terminals(non_terminal);
 
     // primera regla
@@ -177,7 +175,54 @@ impl Grammar {
     }
 
     // segunda regla
+    let locations = self.find_in_right_side(non_terminal);
 
+    for (right_index, prod_index) in locations {
+      _use_third_rule = false;
+
+      let production = self.get_production(right_index);
+      
+      // Si es el último elemento de la producción, aplicar la tercer regla.
+      if prod_index + 1 == production.len() {
+        _use_third_rule = true;
+      }
+      
+      // encontrar FIRST del lado derecho del no terminal.
+      // A -> aBb, entonces FOLLOW(B) = FIRST(b) excepto ' '
+      let right_side = &production[prod_index+1..production.len()];
+
+      // aplicar la segunda regla solamente si no es el último elemento
+      // de la producción.
+      if right_side.len() > 0 {
+        let right_first = self.find_first_production(&right_side.to_vec());
+        for element in right_first {
+          if element != "' '"  {
+            if !follow.contains(&element) {
+              follow.push(element);
+            }
+          } else {
+            _use_third_rule = true;
+          }
+        }
+      }
+
+      // con esta condición se rompe la recursividad en caso de que la
+      // producción a analizar sea la misma que la del no terminal.
+      if non_terminal == &self.sides.left[right_index] {
+        continue;
+      }
+
+      // se aplica la tercera regla si es necesario.
+      if _use_third_rule {
+        let non_terminal = self.sides.left[right_index].to_owned();
+        let next_follow = self.find_follow(&non_terminal);
+        for next in next_follow {
+          if !follow.contains(&next) {
+            follow.push(next);
+          }
+        }
+      }
+    }
     follow
   }
 
@@ -192,15 +237,43 @@ impl Grammar {
       indexes
   }
 
-  // fn find_in_right_side(
-  //   &self, non_terminal: &String,
-  // ) -> Vec<(usize, usize)> {
-  //   let result = vec![];
+  fn find_in_right_side(&self, non_terminal: &String) -> Vec<(usize, usize)> {
+    let mut result = vec![];
 
-  //   for (prod_index, prod) in self.sides.right.iter().enumerate() {
-  //     for 
-  //   }
+    for (right_index, prod) in self.sides.right.iter().enumerate() {
+      for (prod_index, el) in self.side_to_prod(prod).iter().enumerate() {
+        if non_terminal == el {
+          result.push((right_index, prod_index));
+        }
+      }
+    }
 
-  //   result
-  // }
+    result
+  }
+
+  fn get_production(&mut self, index: usize) -> Vec<String> {
+    if self.productions.contains_key(&index) {
+      match self.productions.get(&index) {
+        Some(production) => return production.to_owned(),
+        None => {},
+      }
+    }
+    let production = self.side_to_prod(&self.sides.right[index]);
+    self.productions.insert(
+      index, production.to_owned(),
+    );
+    
+    production
+  }
+
+  fn side_to_prod(&self, side: &String) -> Vec<String> {
+    let elements_in_production = side.split(' ').collect::<Vec<_>>();
+    let mut production = vec![];
+
+    for element in elements_in_production {
+      production.push(String::from(element));
+    }
+
+    production
+  }
 }

@@ -18,15 +18,15 @@ fn main() -> io::Result<()> {
   let productions = read_productions();
 
   let mut grammar = Grammar::new(productions);
-  
   grammar.find_non_terminals();
   grammar.find_terminals();
 
-  for terminal in grammar.non_terminals.to_owned() {
+  for non_terminal in grammar.non_terminals.to_owned() {
     println!(
-      "{} => FIRST = {{{}}}",
-      terminal,
-      grammar.find_single_first(&terminal).join(", "),
+      "{} => FIRST = {{{}}}, FOLLOW = {{{}}}",
+      non_terminal,
+      grammar.find_single_first(&non_terminal).join(", "),
+      grammar.find_follow(&non_terminal).join(", "),
     );
   }
 
@@ -49,25 +49,25 @@ fn main() -> io::Result<()> {
 /// two -> b
 /// ```
 pub fn read_productions() -> Vec<String> {
-    let stdin = io::stdin();
-    let mut lines = stdin.lock().lines();
-    let mut prods = Vec::new();
+  let stdin = io::stdin();
+  let mut lines = stdin.lock().lines();
+  let mut prods = Vec::new();
 
-    while let Some(line) = lines.next() {
-        // Se obtiene la cantidad de producciones a leer
-        let length: i32 = line.unwrap().trim().parse().unwrap();
+  while let Some(line) = lines.next() {
+    // Se obtiene la cantidad de producciones a leer
+    let length: i32 = line.unwrap().trim().parse().unwrap();
 
-        // Se leen las producciones línea a línea
-        for _ in 0..length {
-            let line = lines
-                .next()
-                .expect("No hubo una siguiente producción")
-                .expect("¡Error al leer la producción!");
+    // Se leen las producciones línea a línea
+    for _ in 0..length {
+      let line = lines
+          .next()
+          .expect("No hubo una siguiente producción")
+          .expect("¡Error al leer la producción!");
 
-            // Se guarda la producción leída
-            prods.push(line);
-        }
+      // Se guarda la producción leída
+      prods.push(line);
     }
+  }
 
-    prods
+  prods
 }
