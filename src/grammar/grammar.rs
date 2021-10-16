@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 /// Estructura para representar ambos lados de la gramática.
 pub struct Sides {
   /// Lado izquierdo de el símbolo `->`.
@@ -11,6 +13,8 @@ pub struct Grammar {
   pub terminals: Vec<String>,
   pub non_terminals: Vec<String>,
   pub sides: Sides,
+  pub firsts: HashMap<String, Vec<String>>,
+  pub follows: HashMap<String, Vec<String>>,
 }
 
 impl Grammar {
@@ -32,6 +36,8 @@ impl Grammar {
       terminals: vec![],
       non_terminals: vec![],
       sides: Sides { left, right },
+      firsts: HashMap::new(),
+      follows: HashMap::new(),
     }
   }
 
@@ -83,18 +89,28 @@ impl Grammar {
     self.terminals = terminals;
   }
 
-  pub fn find_first(&self, non_terminal: &String) -> Vec<String> {
+  pub fn find_first(&mut self, non_terminal: &String) -> Vec<String> {
+    // Revisa si el elemento es un terminal.
     if self.terminals.contains(non_terminal) {
       return vec![String::from(non_terminal)]
     }
-    
+
     let indexes = self.get_indexes(non_terminal);
+
+    // Revisa si el FIRST del no terminal ya fue encontrado anteriormente
+    if self.firsts.contains_key(non_terminal) {
+      match self.firsts.get(non_terminal) {
+        Some(first) => return first.to_owned(),
+        None => {},
+      }
+    }
+
     let mut first = vec![];
 
     for index in indexes {
-      let first_in_body = &String::from(
-        self.sides.right[index].split(' ').collect::<Vec<_>>()[0]
-      );
+      let elements_in_production = self.sides.right[index]
+        .split(' ').collect::<Vec<_>>();
+      let first_in_body = &String::from(elements_in_production[0]);
 
       if first_in_body == non_terminal {
         continue;
@@ -105,17 +121,25 @@ impl Grammar {
         continue;
       }
 
-      if self.sides.left.contains(first_in_body) {
+      if self.non_terminals.contains(first_in_body) {
+        // Si el primer elemento de la producción es un no terminal
+        // realizar búsqueda de FIRST(first_in_body).
         for maybe_first in self.find_first(first_in_body) {
           if !first.contains(&maybe_first) {
             first.push(maybe_first);
           }
         }
-      } else if !first.contains(first_in_body) {
+
+        continue;
+      } 
+
+      if !first.contains(first_in_body) {
         first.push(String::from(first_in_body));
       }
     }
 
+    // Guardar en el "caché" el FIRST del no terminal
+    self.firsts.insert(String::from(non_terminal), first.to_owned());
     first
   }
 
