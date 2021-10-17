@@ -1,4 +1,5 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
+use itertools::Itertools;
 
 /// Estructura para representar ambos lados de la gramática.
 pub struct Sides {
@@ -91,7 +92,8 @@ impl Grammar {
     self.terminals = terminals;
   }
 
-  pub fn find_first_production(&mut self, elements: &Vec<String>) -> Vec<String> {
+  /// Regresa FIRST de toda la producción.
+  fn find_first_production(&mut self, elements: &Vec<String>) -> Vec<String> {
     let mut first = vec![];
 
     for element in elements {
@@ -111,6 +113,7 @@ impl Grammar {
     first
   }
 
+  /// Regresa FIRST de un no terminal.
   pub fn find_single_first(&mut self, non_terminal: &String) -> Vec<String> {
     // Revisa si el elemento es un terminal.
     if self.terminals.contains(non_terminal) {
@@ -164,6 +167,76 @@ impl Grammar {
     first
   }
 
+  /// Revisa si la gramática es LL(1) siguiendo las 3 condiciones.
+  pub fn is_ll1(&mut self) -> bool {
+    for non_terminal in self.non_terminals.to_owned() {
+      let indexes = &mut self.get_indexes_in_non_terminals(&non_terminal);
+      // Si el no terminal solo tiene una produccieon o menos (no se si pueda)
+      // suceder, no se aplica ninguna regla. Solo aplica para terminales de
+      // la forma A -> a | b
+      if indexes.len() <= 1 {
+        continue;
+      }
+
+      for pair_of_indexes in indexes.to_owned().into_iter().combinations(2) {
+        // Obtenemos objetos y estructuras necesarias para las tres reglas.
+        let side_1 = self.sides.right[pair_of_indexes[0]].to_owned();
+        let side_2 = self.sides.right[pair_of_indexes[1]].to_owned();
+        let production_1 = self.side_to_prod(&side_1);
+        let production_2 = self.side_to_prod(&side_2);
+        // Se obtienen first
+        let first_1: HashSet<String> = self.find_first_production(
+          &production_1,
+        ).into_iter().collect();
+        let first_2: HashSet<String> = self.find_first_production(
+          &production_2,
+        ).into_iter().collect();
+
+        // primera regla: la intersección de FIRST(a) y FIRST(b) debe ser le
+        // conjunto vacío: FIRST(a) ∩ FIRST(b) = ∅
+        let intersection: Vec<&String> = first_1.intersection(
+          &first_2,
+        ).collect();
+
+        // Aquí se validan tanto la primera como la segunda regla. Si los dos
+        // derivan en epsilon, la intersección será diferente que cero.
+        if intersection.len() != 0 {
+          return false;
+        }
+
+        // Revisa la tercer regla.
+        if first_1.contains("' '") {
+          let follow_set: HashSet<String> = self.find_follow(
+            &non_terminal,
+          ).into_iter().collect();
+          let third_rule_inter: Vec<&String> = first_2.intersection(
+            &follow_set,
+          ).collect();
+          
+          if third_rule_inter.len() != 0 {
+            return false;
+          }
+        }
+
+        if first_2.contains("' '") {
+          let follow_set: HashSet<String> = self.find_follow(
+            &non_terminal,
+          ).into_iter().collect();
+          let third_rule_inter: Vec<&String> = first_1.intersection(
+            &follow_set,
+          ).collect();
+
+          if third_rule_inter.len() != 0 {
+            return false;
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /// Regresa FOLLOW de un terminal.
   pub fn find_follow(&mut self, non_terminal: &String) -> Vec<String> {
     if self.follows.contains_key(non_terminal) {
       match self.follows.get(non_terminal) {
@@ -235,6 +308,8 @@ impl Grammar {
     follow
   }
 
+  /// Regresa los índices de las apariciones del no terminal en el lado
+  /// izquierdo de la gramática.
   fn get_indexes_in_non_terminals(&self, non_terminal: &String) -> Vec<usize> {
       let mut indexes = vec![];
 
@@ -246,6 +321,7 @@ impl Grammar {
       indexes
   }
 
+  /// Busca un no terminal del lado derecho de la gramática.
   fn find_in_right_side(&self, non_terminal: &String) -> Vec<(usize, usize)> {
     let mut result = vec![];
 
@@ -260,6 +336,17 @@ impl Grammar {
     result
   }
 
+  /// Genera todas las producciones en la gramática y las guarda en un caché.
+  pub fn find_all_productions(&mut self) {
+    for (index, _) in self.sides.left.iter().enumerate() {
+      let production = self.side_to_prod(&self.sides.right[index]);
+      self.productions.insert(
+        index, production.to_owned(),
+      );
+    }
+  }
+
+  /// Construye una sola producción de acuerdo a un índice del lado derecho.
   fn get_production(&mut self, index: usize) -> Vec<String> {
     if self.productions.contains_key(&index) {
       match self.productions.get(&index) {
@@ -275,6 +362,7 @@ impl Grammar {
     production
   }
 
+  /// Convierte un string a un vector de elementos (una producción).
   fn side_to_prod(&self, side: &String) -> Vec<String> {
     let elements_in_production = side.split(' ').collect::<Vec<_>>();
     let mut production = vec![];

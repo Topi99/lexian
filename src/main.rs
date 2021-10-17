@@ -20,6 +20,7 @@ fn main() -> io::Result<()> {
   let mut grammar = Grammar::new(productions);
   grammar.find_non_terminals();
   grammar.find_terminals();
+  grammar.find_all_productions();
 
   for non_terminal in grammar.non_terminals.to_owned() {
     println!(
@@ -29,6 +30,8 @@ fn main() -> io::Result<()> {
       grammar.find_follow(&non_terminal).join(", "),
     );
   }
+
+  println!("LL(1)? {}", if grammar.is_ll1() { "Yes" } else { "No" });
 
   Ok(())
 }
