@@ -13,7 +13,9 @@ use grammar::grammar::{Grammar};
 /// 3. Del lado izquierdo se obtienen los elementos no terminales.
 /// 4. Del lado derecho se eliminan elementos no terminales y se obtienen
 /// terminales.
-/// 5. Se imprimen elementos terminales y no terminales en la consola.
+/// 5. Por cada no terminal, se obtienen los conjuntos FIRST y FOLLOW de cada
+/// non terminal y se imprimen en la consola.
+/// 5. Se imprime si la gramática es LL(1).
 fn main() -> io::Result<()> {
   let productions = read_productions();
 
