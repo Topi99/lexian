@@ -1,5 +1,5 @@
 use std::collections::{HashMap};
-use super::grammar::grammar::{Grammar};
+use super::grammar::{Grammar};
 
 /// Estructura de un parser genérico.
 pub struct Parser {

@@ -2,7 +2,7 @@ mod grammar;
 mod analyzer;
 
 use std::io::{self, BufRead};
-use grammar::grammar::{Grammar};
+use grammar::{Grammar};
 use analyzer::{LL1Analyzer};
 
 /// La función principal que será llamada al ejecutar el programa.
