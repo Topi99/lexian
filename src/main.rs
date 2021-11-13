@@ -1,7 +1,9 @@
 mod grammar;
+mod analyzer;
 
 use std::io::{self, BufRead};
 use grammar::grammar::{Grammar};
+use analyzer::{LL1Analyzer};
 
 /// La función principal que será llamada al ejecutar el programa.
 /// 
@@ -33,8 +35,13 @@ fn main() -> io::Result<()> {
     );
   }
 
-  println!("LL(1)? {}", if grammar.is_ll1() { "Yes" } else { "No" });
-
+  let is_ll1 = grammar.is_ll1();
+  println!("LL(1)? {}", if is_ll1 { "Yes" } else { "No" });
+  
+  if is_ll1 {
+    let analyzer = LL1Analyzer::new(grammar);
+  }
+  
   Ok(())
 }
 
