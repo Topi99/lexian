@@ -20,7 +20,7 @@ pub struct LL1Analyzer<'analyzer> {
 impl<'analyzer> LL1Analyzer<'analyzer> {
   pub fn new(
     grammar: &'analyzer Grammar
-  ) -> LL1Analyzer<'analyzer> {
+  ) -> LL1Analyzer {
     LL1Analyzer {
       table: HashMap::new(),
       parser: Parser {
