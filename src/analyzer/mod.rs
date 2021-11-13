@@ -9,16 +9,18 @@ pub struct Parser {
 }
 
 /// Estructura que representa un analizador LL1.
-pub struct LL1Analyzer {
+pub struct LL1Analyzer<'analyzer> {
   /// Tabla de parseo predictivo del analizador.
   pub table: HashMap<String, HashMap<String, Vec<i8>>>,
   /// Parser predictivo no recursivo.
   pub parser: Parser,
-  pub grammar: Grammar,
+  pub grammar: &'analyzer Grammar,
 }
 
-impl LL1Analyzer {
-  pub fn new(grammar: Grammar) -> Self {
+impl<'analyzer> LL1Analyzer<'analyzer> {
+  pub fn new(
+    grammar: &'analyzer Grammar
+  ) -> LL1Analyzer<'analyzer> {
     LL1Analyzer {
       table: HashMap::new(),
       parser: Parser {

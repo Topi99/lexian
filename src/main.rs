@@ -39,7 +39,7 @@ fn main() -> io::Result<()> {
   println!("LL(1)? {}", if is_ll1 { "Yes" } else { "No" });
   
   if is_ll1 {
-    let analyzer = LL1Analyzer::new(grammar);
+    let _analyzer = LL1Analyzer::new(&grammar);
   }
   
   Ok(())
