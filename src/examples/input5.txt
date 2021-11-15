@@ -1,4 +1,4 @@
-8
+8 2
 bexpr -> bexpr or bterm
 bexpr -> bterm
 bterm -> bterm and bfactor
@@ -7,3 +7,5 @@ bfactor -> not bfactor
 bfactor -> ( bexpr ) 
 bfactor -> true
 bfactor -> false
+true true
+true and true

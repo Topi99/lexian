@@ -83,4 +83,52 @@ impl<'analyzer> LL1Analyzer<'analyzer> {
       }
     }
   }
+
+  pub fn get_table_as_html(&self) -> String {
+    let mut table_html = String::from(
+      "
+      <html>
+        <style>
+          table, th, td {
+            border:1px solid black;
+          }
+        </style>
+        <body>
+          <table>
+            <tr>
+              <th>Non Terminal</th>"
+    );
+
+    let mut terminals = self.grammar.terminals.to_owned();
+    terminals.push(String::from("$"));
+
+    // Escribe cabecera
+    for terminal in terminals.to_owned() {
+      table_html.push_str(&format!("<th>{}</th>", terminal));
+    }
+    table_html.push_str("</tr>");
+
+    // Escribe cuerpo
+    for (non_terminal, row_to_insert) in self.table.iter() {
+      table_html.push_str(&format!("<tr><td>{}</td>", non_terminal));
+      for terminal in terminals.to_owned() {
+        match row_to_insert.get(&terminal) {
+          Some(res) => {
+            let prod = self.grammar.productions.get(res).unwrap();
+            table_html.push_str(
+              &format!("<td>{} -> {}</td>", non_terminal, prod.join(" ")),
+            );
+          },
+          None => {
+            table_html.push_str("<td></td>");
+          },
+        }
+      }
+      table_html.push_str("</tr>");
+    }
+
+    table_html.push_str("</table></html></body>");
+
+    table_html
+  }
 }

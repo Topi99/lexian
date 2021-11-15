@@ -1,7 +1,11 @@
-6
+6 4
 S -> A a
 A -> B D
 B -> b
 B -> ' '
 D -> d
 D -> ' '
+a
+a a a b
+b a
+b d a

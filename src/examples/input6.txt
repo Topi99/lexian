@@ -1,4 +1,4 @@
-7
+7 1
 S -> A a
 S -> b
 A -> b d APrime
@@ -6,3 +6,4 @@ A -> APrime
 APrime -> c APrime
 APrime -> a d APrime
 APrime -> ' '
+a a a a
