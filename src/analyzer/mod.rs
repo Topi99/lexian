@@ -53,20 +53,13 @@ impl<'analyzer> LL1Analyzer<'analyzer> {
   ///    add A -> a to M[A, b]. If EPSILON is in FIRST(a) and $ in FOLLOW(A),
   ///    add A -> a to M[A, $] as well.
   pub fn build_table(&mut self) {
-    // key is a non terminal of the grammar.
-    // value is the content of the cell in the table.
-    // for (key, value) in self.table.iter() {
-    //   for terminal in self.grammar.firsts.get(key) {
-    //     let rule_index = 
-    //     value.insert(terminal, );
-    //   }
-    // }
     let left = self.grammar.sides.left.to_owned();
     for (index, non_terminal) in left.iter().enumerate() {
       let production = self.grammar.productions.get(&index).unwrap();
       let first = self.grammar.quick_first_production(production);
 
-      // primer regla
+      // Primer regla
+      // Añade las reglas en sus respetivas casillas
       for terminal in first.to_owned() {
         if terminal == "' '" {
           continue;
@@ -77,18 +70,17 @@ impl<'analyzer> LL1Analyzer<'analyzer> {
         self.table.insert(String::from(non_terminal), row_to_insert);
       }
 
-      // segunda regla
+      // Segunda regla
       if !first.contains(&String::from("' '")) {
         continue;
       }
 
+      // Añade las reglas a M[A, b], donde b pertenece a FOLLOW(A)
       for terminal in self.grammar.follows.get(non_terminal).unwrap() {
         let mut row_to_insert = self.table.get(non_terminal).unwrap().clone();
         row_to_insert.insert(String::from(terminal), index);
         self.table.insert(String::from(non_terminal), row_to_insert);
       }
     }
-
-    println!("{:?}", self.table);
   }
 }

@@ -38,10 +38,13 @@ fn main() -> io::Result<()> {
   let is_ll1 = grammar.is_ll1();
   println!("LL(1)? {}", if is_ll1 { "Yes" } else { "No" });
   
-  if is_ll1 {
-    let mut analyzer = LL1Analyzer::new(&mut grammar);
-    analyzer.build_table();
+  if !is_ll1 {
+    println!("LL1(1)? No");
+    return Ok(())
   }
+
+  let mut analyzer = LL1Analyzer::new(&mut grammar);
+  analyzer.build_table();
   
   Ok(())
 }
