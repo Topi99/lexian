@@ -16,7 +16,7 @@ pub struct Grammar {
   pub sides: Sides,
   pub firsts: HashMap<String, Vec<String>>,
   pub follows: HashMap<String, Vec<String>>,
-  productions: HashMap<usize, Vec<String>>,
+  pub productions: HashMap<usize, Vec<String>>,
 }
 
 impl Grammar {
@@ -93,7 +93,9 @@ impl Grammar {
   }
 
   /// Regresa FIRST de toda la producción.
-  fn find_first_production(&mut self, elements: &Vec<String>) -> Vec<String> {
+  pub fn find_first_production(
+    &mut self, elements: &Vec<String>,
+  ) -> Vec<String> {
     let mut first = vec![];
 
     for element in elements {
@@ -165,6 +167,24 @@ impl Grammar {
     // Guardar en el "caché" el FIRST del no terminal
     self.firsts.insert(String::from(non_terminal), first.to_owned());
     first
+  }
+
+  pub fn quick_first_production(&self, elements: &Vec<String>) -> Vec<String> {
+    let first = elements[0].to_owned();
+
+    if first == "'" {
+      return vec![String::from("' '")];
+    }
+
+    if self.terminals.contains(&first) {
+      return vec![String::from(first)];
+    }
+
+    if self.non_terminals.contains(&first) {
+      return self.firsts.get(&first).unwrap().to_owned();
+    }
+
+    panic!("Symbol \"{}\" not found in grammar!", first);
   }
 
   /// Revisa si la gramática es LL(1) siguiendo las 3 condiciones.
