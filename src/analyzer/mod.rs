@@ -4,10 +4,10 @@ use super::grammar::{Grammar};
 pub type TableTerminals = HashMap<String, usize>;
 
 /// Estructura de un parser genérico.
-pub struct Parser {
-  pub stack: Vec<String>,
-  pub input: Vec<String>,
-  pub rule: Vec<String>,
+struct Parser {
+  stack: Vec<String>,
+  input: Vec<String>,
+  rule: Vec<String>,
 }
 
 /// Estructura que representa un analizador LL1.
@@ -15,7 +15,7 @@ pub struct LL1Analyzer<'analyzer> {
   /// Tabla de parseo predictivo del analizador.
   pub table: HashMap<String, TableTerminals>,
   /// Parser predictivo no recursivo.
-  pub parser: Parser,
+  parser: Parser,
   /// Built grammar.
   pub grammar: &'analyzer mut Grammar,
 }
@@ -130,5 +130,82 @@ impl<'analyzer> LL1Analyzer<'analyzer> {
     table_html.push_str("</table></html></body>");
 
     table_html
+  }
+
+  /// Evalúa una cadena de texto con el analizador LL(1).
+  /// Regresa `true` si es aceptada la cadena.
+  /// Regresa `false` si no fue aceptada.
+  pub fn eval(&mut self, input: &String) -> bool {
+    // Reinicia el parser
+    self.parser.input = self.split_input(input);
+    self.parser.input.push(String::from("$"));
+    self.parser.stack = vec![
+      String::from("$"),
+      String::from(self.grammar.non_terminals.first().unwrap()),
+    ];
+    self.parser.rule = vec![];
+
+    let mut last_stack: &String;
+    let mut first_input: &String;
+    let mut production;
+    loop {
+      if self.parser.stack.len() == 0 || self.parser.input.len() == 0 {
+        return false;
+      }
+
+      first_input = match self.parser.input.first() {
+        Some(last) => last,
+        None => {return false},
+      };
+      let temp_stack = self.parser.stack.to_owned();
+      last_stack = match temp_stack.last() {
+        Some(last) => last,
+        None => {return false},
+      };
+
+      // Condición de aceptación de cadena
+      if first_input == last_stack && first_input == "$" {
+        return true;
+      }
+
+      if self.grammar.non_terminals.contains(last_stack) {
+        production = self.grammar.productions.get(
+          match self.table.get(last_stack).unwrap().get(first_input) {
+            Some(index) => index,
+            None => {return false},  
+          },
+        ).unwrap();
+        self.parser.stack.pop();
+
+        for el in production.into_iter().rev() {
+          if el == "'" {
+            continue;
+          } else {
+            self.parser.stack.push(String::from(el));
+          }
+        };
+      }
+
+      if self.grammar.terminals.contains(last_stack) || last_stack == "$" {
+        if first_input == last_stack {
+          // eliminamos el último elemento del stack
+          self.parser.stack.pop();
+          self.parser.input = self.parser.input[1..].to_vec();
+        } else {
+          return false;
+        }
+      }
+    }
+  }
+
+  fn split_input(&self, input: &String) -> Vec<String> {
+    let mut result = vec![];
+    let splitted: Vec<&str> = input.split(" ").collect();
+
+    for el in splitted {
+      result.push(String::from(el));
+    }
+
+    result
   }
 }

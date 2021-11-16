@@ -23,7 +23,6 @@ use analyzer::{LL1Analyzer};
 /// 5. Se imprime si la gramática es LL(1).
 fn main() -> io::Result<()> {
   let (productions, inputs) = read_productions();
-  println!("{:?} {:?}", productions, inputs);
 
   let mut grammar = Grammar::new(productions);
   grammar.find_non_terminals();
@@ -45,13 +44,20 @@ fn main() -> io::Result<()> {
   let mut analyzer = LL1Analyzer::new(&mut grammar);
   analyzer.build_table();
 
+  // Crea archivo a escribir
   let timestamp = get_timestamp();
   let mut file = OpenOptions::new()
     .append(true).create(true).open(format!("{:?}.html", timestamp)).unwrap();
+
+  // Escribe tabla a archivo
   let table_html = analyzer.get_table_as_html();
-  
   if let Err(e) = writeln!(file, "{}", table_html) {
     eprintln!("No se pudo escribir al archivo: {}", e);
+  }
+
+  // Evalúa cada entrada
+  for input in inputs {
+    println!("{}? {}", input, analyzer.eval(&input));
   }
 
   Ok(())

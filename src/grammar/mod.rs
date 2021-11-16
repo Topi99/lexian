@@ -170,21 +170,33 @@ impl Grammar {
   }
 
   pub fn quick_first_production(&self, elements: &Vec<String>) -> Vec<String> {
-    let first = elements[0].to_owned();
+    let mut result = vec![];
 
-    if first == "'" {
-      return vec![String::from("' '")];
+    let mut another = false;
+    let mut found_epsilon = false;
+    for el in elements {
+      if el == "'" && !found_epsilon {
+        result.push(String::from("' '"));
+        another = true;
+        found_epsilon = true;
+      } else if el == "'" && found_epsilon {
+        found_epsilon = false;
+      }
+  
+      if self.terminals.contains(&el) {
+        result.push(String::from(el));
+      }
+  
+      if self.non_terminals.contains(&el) {
+        result.append(&mut self.firsts.get(el).unwrap().to_owned());
+      }
+
+      if !another && !result.contains(&String::from("' '")) {
+        return result;
+      }
     }
 
-    if self.terminals.contains(&first) {
-      return vec![String::from(first)];
-    }
-
-    if self.non_terminals.contains(&first) {
-      return self.firsts.get(&first).unwrap().to_owned();
-    }
-
-    panic!("Symbol \"{}\" not found in grammar!", first);
+    result
   }
 
   /// Revisa si la gramática es LL(1) siguiendo las 3 condiciones.
@@ -394,4 +406,3 @@ impl Grammar {
     production
   }
 }
-
