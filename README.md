@@ -19,8 +19,18 @@
   cd lexian
   ```
 
-3. Puedes ejecutar el programa directamente con `cargo` (se instala automáticamente con `rustup`):
+3. Puedes ejecutar el programa directamente con `cargo` (se instala automáticamente con `rustup`), pero se recomienda ejecutar en modo "release":
   ```bash
   # el programa necesita un archivo como entrada para correr correctamente
-  cargo run < src/input-examples.txt
+  cargo run < src/examples/input2.txt
+  ```
+
+4. Para ejecutar en modo "release", primero se debe construir el programa:
+  ```bash
+  cargo build --release
+  ```
+  El binario se encuentra en `./target/release/lexian`. Para ejecutar:
+  ```bash
+  # el programa necesita un archivo como entrada para correr correctamente
+  ./target/release/lexian < ./src/examples/input2.txt
   ```

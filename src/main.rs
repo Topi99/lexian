@@ -20,7 +20,11 @@ use analyzer::{LL1Analyzer};
 /// terminales.
 /// 5. Por cada no terminal, se obtienen los conjuntos FIRST y FOLLOW de cada
 /// non terminal y se imprimen en la consola.
-/// 5. Se imprime si la gramática es LL(1).
+/// 6. Si la gramática es LL(1), continúa con la evaluación de cadenas de 
+/// texto, si no, se detiene la ejecución y se notifica al usuario.
+/// 7. Se construye la tabla de parseo.
+/// 8. Las entradas son evaluadas una por una.
+/// 9. Se construye el archivo de salida.
 fn main() -> io::Result<()> {
   let (productions, inputs) = read_productions();
 
@@ -66,6 +70,8 @@ fn main() -> io::Result<()> {
       eprintln!("No se pudo escribir la archivo: {}", e);
     }
   }
+
+  println!("El resultado está en el archivo {:?}.html", timestamp);
 
   Ok(())
 }

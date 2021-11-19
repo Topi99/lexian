@@ -7,7 +7,6 @@ pub type TableTerminals = HashMap<String, usize>;
 struct Parser {
   stack: Vec<String>,
   input: Vec<String>,
-  rule: Vec<String>,
 }
 
 /// Estructura que representa un analizador LL1.
@@ -30,7 +29,6 @@ impl<'analyzer> LL1Analyzer<'analyzer> {
       parser: Parser {
         stack: vec![],
         input: vec![],
-        rule: vec![],
       },
       grammar,
     };
@@ -143,7 +141,6 @@ impl<'analyzer> LL1Analyzer<'analyzer> {
       String::from("$"),
       String::from(self.grammar.non_terminals.first().unwrap()),
     ];
-    self.parser.rule = vec![];
 
     let mut last_stack: &String;
     let mut first_input: &String;

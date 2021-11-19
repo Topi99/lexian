@@ -1,13 +1,13 @@
 [package]
 name = "lexian"
-version = "0.1.1"
+version = "1.0.0"
 authors = ["Topiltzin Hernández Mares <nokoayzack@gmail.com>"]
 edition = "2018"
 license = "MIT"
-description = "A tool to lexicaly analyze a grammar"
+description = "A tool to lexicaly analyze a grammar and a given set of inputs."
 readme = "README.md"
-homepage = "https://github.com/you/grrs"
-repository = "https://github.com/you/grrs"
+homepage = "https://github.com/Topi99/lexian"
+repository = "https://github.com/Topi99/lexian"
 keywords = ["lexical analyzer", "context-free grammar", "chomsky"]
 categories = ["compilers"]
 
