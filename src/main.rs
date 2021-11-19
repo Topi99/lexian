@@ -55,9 +55,16 @@ fn main() -> io::Result<()> {
     eprintln!("No se pudo escribir al archivo: {}", e);
   }
 
-  // Evalúa cada entrada
-  for input in inputs {
-    println!("{}? {}", input, analyzer.eval(&input));
+  // Evalúa cada entrada e imprime resultados en el archivo HTML.
+  for (index, input) in inputs.iter().enumerate() {
+    let result = analyzer.eval(&input);
+
+    if let Err(e) = writeln!(
+      file,
+      "<br><b>Input #{}:</b> {}", index + 1, if result {"Yes"} else {"No"},
+    ) {
+      eprintln!("No se pudo escribir la archivo: {}", e);
+    }
   }
 
   Ok(())
