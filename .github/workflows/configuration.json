@@ -34,7 +34,7 @@
   "empty_template": "- no changes",
   "label_extractor": [
     {
-      "pattern": "(\\w+)",
+      "pattern": "(?:^|(?:[.!?]\\s))(\\w+)",
       "target": "$1",
       "on_property": "title"
     }
