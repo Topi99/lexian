@@ -2,7 +2,7 @@
   "categories": [
     {
       "title": "## 🚀 New Features",
-      "labels": ["feature", "feat"]
+      "labels": ["feat"]
     },
     {
       "title": "## 🐛 Fixes",
@@ -34,15 +34,39 @@
   "empty_template": "- no changes",
   "label_extractor": [
     {
-      "pattern": "(?:^|(?:[.!?]\\s))(\\w+)",
-      "target": "$1",
-      "on_property": "title",
-      "method": "match"
+      "pattern": "^feat",
+      "target": "feat",
+      "on_property": "title"
+    },
+    {
+      "pattern": "^test",
+      "target": "test",
+      "on_property": "title"
+    },
+    {
+      "pattern": "^build",
+      "target": "deps",
+      "on_property": "title"
+    },
+    {
+      "pattern": "^fix",
+      "target": "fix",
+      "on_property": "title"
+    },
+    {
+      "pattern": "^docs",
+      "target": "docs",
+      "on_property": "title"
+    },
+    {
+      "pattern": "^doc",
+      "target": "docs",
+      "on_property": "title"
+    },
+    {
+      "pattern": "^chore",
+      "target": "chore",
+      "on_property": "title"
     }
-  ],
-  "duplicate_filter": {
-    "pattern": "\\[ABC-....\\]",
-    "on_property": "title",
-    "method": "match"
-  }
+  ]
 }
