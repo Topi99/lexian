@@ -1,6 +1,6 @@
 # Analizador Léxico
 
-Herramienta escrita en Rust para analizar gramáticas.
+Herramienta escrita en Rust para analizar gramáticas en la forma normal de Chompsky.
 
 ## Requisitos previos
 
