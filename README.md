@@ -1,5 +1,7 @@
 # Analizador Léxico
 
+Herramienta escrita en Rust para analizar gramáticas en la forma normal de Chompsky.
+
 ## Requisitos previos
 
 1. [rustup](https://www.rust-lang.org/tools/install): Este programa está escrito en `rust`, por lo tanto se necesitan las herramientas de desarrollo de `rust`. Si usas `macOS`, `Linux` u otro sistema derivado de `Unix`, puedes instalarlo con:
