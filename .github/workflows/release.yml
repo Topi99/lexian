@@ -13,9 +13,7 @@ jobs:
         id: github_release
         uses: mikepenz/release-changelog-builder-action@v1
         with:
-          configuration: "configuration.json"
-          fromTag: ${{ github.event.inputs.from_commit }}
-          toTag: ${{ github.event.inputs.to_commit }}
+          configuration: ".github/workflows/configuration.json"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
