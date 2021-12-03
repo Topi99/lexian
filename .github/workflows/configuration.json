@@ -14,11 +14,11 @@
     },
     {
         "title": "## 📦 Dependencies",
-        "labels": ["dependencies", "build", "deps"]
+        "labels": ["deps", "build"]
     },
     {
       "title": "## 📖 Documentation",
-      "labels": ["docs", "doc"]
+      "labels": ["docs"]
     },
     {
       "title": "## 🧹 Chores",
@@ -35,37 +35,37 @@
   "label_extractor": [
     {
       "pattern": "^feat",
-      "target": "feat",
+      "method": "match",
       "on_property": "title"
     },
     {
       "pattern": "^test",
-      "target": "test",
+      "method": "match",
       "on_property": "title"
     },
     {
       "pattern": "^build",
-      "target": "deps",
+      "method": "match",
       "on_property": "title"
     },
     {
       "pattern": "^fix",
-      "target": "fix",
+      "method": "match",
       "on_property": "title"
     },
     {
       "pattern": "^docs",
-      "target": "docs",
+      "method": "match",
       "on_property": "title"
     },
     {
       "pattern": "^doc",
-      "target": "docs",
+      "method": "match",
       "on_property": "title"
     },
     {
       "pattern": "^chore",
-      "target": "chore",
+      "method": "match",
       "on_property": "title"
     }
   ]
