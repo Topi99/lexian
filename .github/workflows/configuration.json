@@ -35,38 +35,38 @@
   "label_extractor": [
     {
       "pattern": "^feat",
-      "method": "match",
-      "on_property": "title"
+      "on_property": "title",
+      "method": "match"
     },
     {
       "pattern": "^test",
-      "method": "match",
-      "on_property": "title"
+      "on_property": "title",
+      "method": "match"
     },
     {
       "pattern": "^build",
-      "method": "match",
-      "on_property": "title"
+      "on_property": "title",
+      "method": "match"
     },
     {
       "pattern": "^fix",
-      "method": "match",
-      "on_property": "title"
+      "on_property": "title",
+      "method": "match"
     },
     {
       "pattern": "^docs",
-      "method": "match",
-      "on_property": "title"
+      "on_property": "title",
+      "method": "match"
     },
     {
       "pattern": "^doc",
-      "method": "match",
-      "on_property": "title"
+      "on_property": "title",
+      "method": "match"
     },
     {
       "pattern": "^chore",
-      "method": "match",
-      "on_property": "title"
+      "on_property": "title",
+      "method": "match"
     }
   ]
 }
